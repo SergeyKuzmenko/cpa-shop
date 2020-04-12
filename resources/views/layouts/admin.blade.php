@@ -48,7 +48,7 @@
       <li class="nav-item dropdown user-menu">
         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           <img src="{{asset('public/dashboard/img/admin.png')}}" class="user-image img-circle elevation-2"
-               alt="User Image">
+               alt="Admin Image">
           <span class="d-none d-md-inline">Администратор</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -62,8 +62,7 @@
           </li>
           <li class="user-footer">
             <a href="{{ url('/admin/profile') }}" class="btn btn-default btn-flat">Профиль</a>
-            <a href="{{ url('/admin') }}" class="btn btn-default btn-flat float-right"
-               onclick="logout()">Выйти</a>
+            <a href="{{ url('/admin/logout') }}" class="btn btn-default btn-flat float-right">Выйти</a>
           </li>
         </ul>
       </li>
@@ -82,11 +81,13 @@
     <div class="sidebar">
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img
-              src="{{asset('public/dashboard/img/admin.png')}}"
-              class="img-circle elevation-2"
-              alt="User Image"
-          />
+          <a href="{{ url('/admin/profile') }}">
+            <img
+                src="{{asset('public/dashboard/img/admin.png')}}"
+                class="img-circle elevation-2"
+                alt="Admin Image"
+            />
+          </a>
         </div>
         <div class="info">
           <a href="{{ url('/admin/profile') }}" class="d-block"
@@ -178,20 +179,8 @@
 <script src="{{asset('public/dashboard/js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset('public/dashboard/js/adminlte.min.js')}}"></script>
 <script>
-  function logout(e) {
-    $.ajax({
-      async: false,
-      url: '{{ url('/admin') }}',
-      type: 'GET',
-      username: 'logout'
-    });
-
-    setTimeout(function () {
-      window.location.href = '{{ url('/admin') }}';
-    }, 200);
-  }
+  //
 </script>
-{{--<script src="{{asset('public/dashboard/dist/js/demo.js')}}"></script>--}}
 @yield('scripts')
 </body>
 </html>

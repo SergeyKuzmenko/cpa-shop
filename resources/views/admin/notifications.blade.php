@@ -291,6 +291,7 @@
             showConfirmButton: false,
             timer: 3000
           });
+          $(".btn-sublit-form").removeAttr("disabled");
         }
       })
       .fail(function () {

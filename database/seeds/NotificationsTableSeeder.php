@@ -15,6 +15,7 @@ class NotificationsTableSeeder extends Seeder
       DB::table('notifications')->insert([
         'telegram_notification_status' => 0,
         'telegram_bot_token' => 'null',
+        'telegram_bot_name' => 'null',
         'telegram_connected_users' => '[]',
         'email_notification_status' => 0,
         'email_email' => 'null',

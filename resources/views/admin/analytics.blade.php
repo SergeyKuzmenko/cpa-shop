@@ -39,7 +39,7 @@
           </div>
 
           <div class="card-body">
-            <form role="form" class="form_analytics" onsubmit="getAnalytics(); return false;">
+            <form role="form" class="form_analytics">
 
               <div class="tab-content" id="custom-tabs-three-tabContent">
                 <div class="tab-pane active show" id="custom-tabs-three-main" role="tabpanel"
@@ -63,7 +63,7 @@
                 </div>
 
               </div>
-              <button type="submit" class="btn btn-primary btn-sublit-form float-right">Сохранить</button>
+              <button class="btn btn-primary btn-sublit-form float-right" onclick="getAnalytics();">Сохранить</button>
             </form>
           </div>
 
@@ -76,6 +76,7 @@
 @section('scripts')
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script>
 //    jQuery(document).ready(function ($) {
 //      const main = CodeMirror.fromTextArea(document.querySelector('#analytics_main'));
@@ -121,10 +122,12 @@
             Swal.fire({
               position: "center",
               icon: "error",
-              title: "Произошла ошибка",
+              title: "Ошибка",
+              text: r.message,
               showConfirmButton: false,
               timer: 3000
             });
+            $(".btn-sublit-form").removeAttr("disabled");
           }
         })
         .fail(function (e) {

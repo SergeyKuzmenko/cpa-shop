@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -8,10 +9,13 @@ use Telegram\Bot\Api as TelegramAPI;
 
 use App\Models\Orders;
 use App\Models\Notifications;
+use App\Models\Analytics;
 
-class AdminApi extends Controller {
+class AdminApi extends Controller
+{
 
-  public function saveOptions(Request $request) {
+  public function saveOptions(Request $request)
+  {
     $data = $request->all();
     try {
       foreach ($data as $key => $value) {
@@ -30,7 +34,8 @@ class AdminApi extends Controller {
     }
   }
 
-  public function getOrders(Orders $orders) {
+  public function getOrders(Orders $orders)
+  {
     $allOrders = [];
     foreach ($orders->get() as $key => $value) {
       array_push($allOrders, [
@@ -47,51 +52,64 @@ class AdminApi extends Controller {
     return response()->json($allOrders);
   }
 
-  public function setOrderState(Request $request, Orders $orders) {
+  public function getDashboardInfo(Orders $orders)
+  {
+    $all = $orders->get()->count();
+    $successed = $orders->countSuccessedOrders();
+    $failed = $orders->countFailedOrders();
+    return response()->json(['response' => [
+      'all' => $all,
+      'successed' => $successed,
+      'failed' => $failed
+    ]]);
+  }
+
+  public function setOrderState(Request $request, Orders $orders)
+  {
     $id = $request->input('id');
     $action = $request->input('action');
 
     if ($id !== null && $action !== null) {
       switch ($action) {
 
-      case 'successed':
-        $orders->where('id', $id)->update(array('state' => 1));
-        return response()->json([
-          'response' => true
-        ]);
-        break;
+        case 'successed':
+          $orders->where('id', $id)->update(array('state' => 1));
+          return response()->json([
+            'response' => true
+          ]);
+          break;
 
-      case 'canceled':
-        $orders->where('id', $id)->update(array('state' => -1));
-        return response()->json([
-          'response' => true
-        ]);
-        break;
+        case 'canceled':
+          $orders->where('id', $id)->update(array('state' => -1));
+          return response()->json([
+            'response' => true
+          ]);
+          break;
 
-      case 'discard':
-        $orders->where('id', $id)->update(array('state' => 0));
-        return response()->json([
-          'response' => true
-        ]);
-        break;
+        case 'discard':
+          $orders->where('id', $id)->update(array('state' => 0));
+          return response()->json([
+            'response' => true
+          ]);
+          break;
 
-      case 'delete':
-        $orders->where('id', $id)->delete();
-        return response()->json([
-          'response' => true
-        ]);
-        break;
+        case 'delete':
+          $orders->where('id', $id)->delete();
+          return response()->json([
+            'response' => true
+          ]);
+          break;
 
-      default:
-        return response()->json([
-          'response' => false,
-          'error' => 'Action not found'
-        ]);
-        break;
+        default:
+          return response()->json([
+            'response' => false,
+            'error' => 'Action not found'
+          ]);
+          break;
       }
     } else {
       return response()->json([
-        'response' => false,
+        'response' => false
       ]);
     }
   }
@@ -99,10 +117,10 @@ class AdminApi extends Controller {
   public function notifications(Request $request)
   {
     $r = $request->all();
-    if ($r){
-      switch ($r['action']){
+    if ($r) {
+      switch ($r['action']) {
         case 'telegram':
-          if ($r['value'] == 'enable'){
+          if ($r['value'] == 'enable') {
             if ($this->telegramBotCheckConnection($r['key'])['status']) {
               DB::table('notifications')
                 ->where('id', 1)
@@ -135,11 +153,32 @@ class AdminApi extends Controller {
           echo 'email';
           break;
         default:
-          dd($r['action']);
-          break;
+          return response()->json([
+            'response' => false,
+            'message' => 'Unknown method'
+          ]);
       }
+    }
+  }
 
+  public function saveAnalytics(Request $request)
+  {
+    $analytics_main = $request->input('analytics_main');
+    $analytics_success = $request->input('analytics_success');
 
+    try {
+      $analytics = Analytics::find(1);
+      $analytics->main_analytics = $analytics_main;
+      $analytics->success_analytics = $analytics_success;
+      $analytics->save();
+      return response()->json([
+        'response' => true
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'response' => false,
+        'message' => 'Произошла внутреняя ошибка'
+      ]);
     }
 
   }
@@ -150,7 +189,7 @@ class AdminApi extends Controller {
     try {
       $response = $telegram->getMe();
       if ($response) {
-        return  ['status' => true, 'data' => $response];
+        return ['status' => true, 'data' => $response];
       }
     } catch (\Exception $exception) {
       return ['status' => false, 'data' => false];

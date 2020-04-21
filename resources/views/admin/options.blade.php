@@ -187,6 +187,17 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script>
 
+    $(window).bind('keydown', function (event) {
+      if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+          case 's':
+            event.preventDefault();
+            getOptions();
+            break;
+        }
+      }
+    });
+
     function getOptions() {
       $(".btn-sublit-form").attr("disabled", "disabled");
       let formData = $(".form_options").serialize();

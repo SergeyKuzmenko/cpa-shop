@@ -78,10 +78,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/javascript/javascript.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script>
-//    jQuery(document).ready(function ($) {
-//      const main = CodeMirror.fromTextArea(document.querySelector('#analytics_main'));
-//      const success = CodeMirror.fromTextArea(document.querySelector('#analytics_success'));
-//    });
+    $(window).bind('keydown', function (event) {
+      if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+          case 's':
+            event.preventDefault();
+            getAnalytics()
+            break;
+        }
+      }
+    });
 
     function getAnalytics() {
       $(".btn-sublit-form").attr("disabled", "disabled");

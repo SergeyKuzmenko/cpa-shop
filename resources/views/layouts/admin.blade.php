@@ -4,30 +4,16 @@
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <title>@yield('title') — {{ env('APP_NAME') }}</title>
-  <link
-      rel="shortcut icon"
-      href="{{ asset('public/img/favicon.png') }} "
-      type="image/png"
-  />
+  <link rel="shortcut icon" href="{{ asset('public/img/favicon.png') }} " type="image/png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="csrf-token" content="{{ csrf_token() }}"/>
-  <link
-      rel="stylesheet"
-      href="{{asset('public/dashboard/css/fontawesome.all.min.css')}}"
-  />
-  <link
-      rel="stylesheet"
-      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
-  />
-  <link
-      rel="stylesheet"
-      href="{{asset('public/dashboard/css/adminlte.min.css')}}"
-  />
-  <link
-      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700"
-      rel="stylesheet"
-  />
+  <link rel="stylesheet" href="{{asset('public/dashboard/css/fontawesome.all.min.css')}}"/>
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"/>
+  <link rel="stylesheet" href="{{asset('public/dashboard/css/adminlte.min.css')}}"/>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet"/>
+
   @yield('styles')
+
 </head>
 <body class="hold-transition sidebar-mini sidebar-collapse">
 <div class="wrapper">
@@ -47,13 +33,13 @@
     <ul class="navbar-nav ml-auto">
       <li class="nav-item dropdown user-menu">
         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <img src="{{asset('public/dashboard/img/admin.png')}}" class="user-image img-circle elevation-2"
+          <img src="{{ route('admin.profile.image') }}" class="user-image img-circle elevation-2"
                alt="Admin Image">
           <span class="d-none d-md-inline">Администратор</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <li class="user-header bg-primary">
-            <img src="{{asset('public/dashboard/img/admin.png')}}" class="img-circle elevation-2" alt="Admin Image">
+            <img src="{{ route('admin.profile.image') }}" class="img-circle elevation-2" alt="Admin">
 
             <p>
               Администратор сайта
@@ -83,7 +69,7 @@
         <div class="image">
           <a href="{{ url('/admin/profile') }}">
             <img
-                src="{{asset('public/dashboard/img/admin.png')}}"
+                src="{{ route('admin.profile.image') }}"
                 class="img-circle elevation-2"
                 alt="Admin Image"
             />
@@ -162,25 +148,25 @@
     </div>
   </aside>
   <div class="content-wrapper">
+
     @yield('content')
+
   </div>
   <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
       <b>Version:</b> {{ env('APP_VERSION') }} |
       <b>Generated:</b> {{ date('d.m.Y') }} {{ date('H:i:s') }}
     </div>
-    <strong
-    >Copyright &copy; {{ date('Y') }}
-      <a href="{{ url('/') }}" target="_black">{{ env('APP_NAME') }}</a></strong
-    >
+    <strong>Copyright &copy; {{ date('Y') }}
+      <a href="{{ url('/') }}" target="_black">{{ env('APP_NAME') }}</a>
+    </strong>
   </footer>
 </div>
 <script src="{{asset('public/dashboard/js/jquery.min.js')}}"></script>
 <script src="{{asset('public/dashboard/js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset('public/dashboard/js/adminlte.min.js')}}"></script>
-<script>
-  //
-</script>
+
 @yield('scripts')
+
 </body>
 </html>

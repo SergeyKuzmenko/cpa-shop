@@ -2,6 +2,15 @@
 
 @section('title', 'Администратор')
 
+@section('styles')
+  <style>
+    .profile-user-img:hover {
+      border: 3px solid #117ae4;
+      cursor: pointer;
+    }
+  </style>
+@endsection
+
 @section('content')
   <section class="content-header">
     <div class="container-fluid">
@@ -18,8 +27,14 @@
         <div class="card card-primary card-outline">
           <div class="card-body box-profile">
             <div class="text-center">
-              <img class="profile-user-img img-fluid img-circle" src="{{asset('public/dashboard/img/admin.png')}}"
-                   alt="{{$name}}">
+
+              <form method="post" id="uploadImage" enctype="multipart/form-data">
+                <label for="upload">
+                  <img class="profile-user-img img-fluid img-circle" src="{{ route('admin.profile.image') }}"
+                       alt="{{$name}}" title="Выбрать фото" for="upload">
+                  <input type="file" id="upload" style="display:none">
+                </label>
+              </form>
             </div>
 
             <h3 class="profile-username text-center">{{$name}}</h3>
@@ -35,13 +50,17 @@
               <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Логин</label>
                 <div class="col-sm-10">
-                  <button class="btn btn-block bg-gradient-warning btn-flat" onclick="changeLogin(); return false;">Изменить логин    </button>
+                  <button class="btn btn-block bg-gradient-warning btn-flat" onclick="changeLogin(); return false;">
+                    Изменить логин
+                  </button>
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Пароль</label>
                 <div class="col-sm-10">
-                  <button class="btn btn-block bg-gradient-warning btn-flat" onclick="changePassword(); return false;">Изменить пароль</button>
+                  <button class="btn btn-block bg-gradient-warning btn-flat" onclick="changePassword(); return false;">
+                    Изменить пароль
+                  </button>
                 </div>
               </div>
               <div class="form-group row">
@@ -59,7 +78,7 @@
               </div>
               <div class="form-group row">
                 <div class="offset-sm-2 col-sm-10">
-                  <button class="btn btn-success float-right" onclick="return false;">Сохранить</button>
+                  <button class="btn btn-success float-right save-other-submit" onclick="saveOther();return false;">Сохранить</button>
                 </div>
               </div>
             </form>
@@ -72,6 +91,47 @@
 @section('scripts')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script>
+    $(window).bind('keydown', function (event) {
+      if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+          case 's':
+            event.preventDefault();
+            saveOther()
+            break;
+        }
+      }
+    });
+
+    $("input:file").change(function (){
+      var formData = new FormData();
+      var file = $('#upload')[0].files[0];
+      formData.append("image", file);
+
+      $.ajax({
+        type:'POST',
+        headers: {
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        },
+        url: '/admin/profile/image',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success:function(r){
+          //
+        },
+        error: function(r){
+          //
+        }
+      });
+    });
+
+    function saveOther() {
+      $(".save-other-submit").attr("disabled", "disabled");
+      let name = $('#name').val();
+      let email = $('#email').val();
+      save('other', null, {name, email});
+    }
     function changeLogin() {
       Swal.mixin({
         input: 'text',
@@ -86,8 +146,7 @@
         'Введите новый логин'
       ]).then((result) => {
         if (result.value) {
-          const data = JSON.stringify(result.value);
-          save('login', data);
+          save('login', result.value[0], result.value[1]);
         }
       });
     }
@@ -105,13 +164,12 @@
         'Введите новый пароль'
       ]).then((result) => {
         if (result.value) {
-          const data = JSON.stringify(result.value);
-          save('password', data);
+          save('password', result.value[0], result.value[1]);
         }
       });
     }
 
-    function save(action, data) {
+    function save(action, old_param, new_param) {
       $.ajax({
         url: "/admin/api/profile/changeProfile",
         type: "POST",
@@ -119,7 +177,7 @@
         headers: {
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         },
-        data: {action, data},
+        data: {action: action, old_param, new_param},
         beforeSend: function () {
           Swal.fire({
             position: "center",
@@ -138,7 +196,10 @@
               showConfirmButton: false,
               timer: 3000
             });
-            $(".btn-sublit-form").removeAttr("disabled");
+            $(".save-other-submit").removeAttr("disabled");
+            if(r.reload){
+              location.reload();
+            }
           } else {
             Swal.fire({
               position: "center",
@@ -154,11 +215,11 @@
           Swal.fire({
             position: "center",
             icon: "error",
-            title: "Произошла ошибка",
+            title: "Произошла внутренняя ошибка",
             showConfirmButton: false,
             timer: 3000
           });
-          $(".btn-sublit-form").removeAttr("disabled");
+          $(".save-other-submit").removeAttr("disabled");
         });
     }
   </script>

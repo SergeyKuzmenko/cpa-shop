@@ -51,7 +51,7 @@
                              placeholder="000000000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX">
                       <span class="input-group-append">
                       <button type="button"
-                              class="btn btn-success btn-flat telegram_notification_enable">Включить</button>
+                              class="btn btn-success btn-flat telegram_notification_enable">Подключить</button>
                     </span>
                     </div>
                   @else
@@ -80,7 +80,7 @@
                       <input type="text" name="email_notification" class="form-control" id="email_notification"
                              placeholder="example@mail.com">
                       <span class="input-group-append">
-                        <button type="button" class="btn btn-success btn-flat">Включить</button>
+                        <button type="button" class="btn btn-success btn-flat">Подключить</button>
                       </span>
                     </div>
                   @else

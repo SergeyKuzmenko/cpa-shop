@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Главная')
+@section('title', 'Панель администратора')
 
 @section('content')
   <section class="content-header">
@@ -118,6 +118,11 @@
 @section('scripts')
   <script>
     jQuery(document).ready(function ($) {
+      update();
+    });
+    // Update information once a one minute
+    setInterval(update(),60000);
+    function update() {
       $.ajax({
         url: 'admin/api/getDashboardInfo',
         type: 'GET',
@@ -128,7 +133,6 @@
           $('.numberSuccessedOrders').html(data.response.successed);
           $('.numberFailedOrders').html(data.response.failed);
         });
-
-    });
+    }
   </script>
 @endsection

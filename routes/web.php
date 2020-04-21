@@ -31,11 +31,14 @@ Route::group(['middleware' => 'auth'], function () { //
   Route::get('/getUpdates', 'Shop@getUpdates');
   Route::get('/getParams', 'Shop@getParams');
   Route::prefix('admin')->group(function () {
+
     Route::get('/logout', 'LoginController@logout')->name('logout');
     Route::get('/', function () {
       return view('admin.dashboard');
     });
     Route::get('profile', 'Admin@profile');
+    Route::get('profile/image', 'Admin@displayAdminImage')->name('admin.profile.image');
+    Route::post('profile/image', 'Admin@uploadAdminImage');
     Route::get('/orders', function () {
       return view('admin.orders');
     });

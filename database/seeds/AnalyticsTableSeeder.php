@@ -13,8 +13,8 @@ class AnalyticsTableSeeder extends Seeder
     public function run()
     {
       DB::table('analytics')->insert([
-        'main_analytics' => 'null',
-        'success_analytics' => 'null'
+        'main_analytics' => '',
+        'success_analytics' => ''
       ]);
     }
 }

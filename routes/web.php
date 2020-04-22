@@ -37,8 +37,8 @@ Route::group(['middleware' => 'auth'], function () { //
       return view('admin.dashboard');
     });
     Route::get('profile', 'Admin@profile');
-    Route::get('profile/image', 'Admin@displayAdminImage')->name('admin.profile.image');
-    Route::post('profile/image', 'Admin@uploadAdminImage');
+    Route::get('profile/image', 'AdminApi@displayAdminImage')->name('admin.profile.image');
+    Route::post('profile/image', 'AdminApi@uploadAdminImage');
     Route::get('/orders', function () {
       return view('admin.orders');
     });

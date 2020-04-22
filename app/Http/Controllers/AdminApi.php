@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Telegram\Bot\Api as TelegramAPI;
 
 use App\Models\Orders;
-use App\Models\Notifications;
 use App\Models\Analytics;
+use App\User;
 
 class AdminApi extends Controller
 {
-
   public function saveOptions(Request $request)
   {
     $data = $request->all();
@@ -71,35 +73,30 @@ class AdminApi extends Controller
 
     if ($id !== null && $action !== null) {
       switch ($action) {
-
         case 'successed':
           $orders->where('id', $id)->update(array('state' => 1));
           return response()->json([
             'response' => true
           ]);
           break;
-
         case 'canceled':
           $orders->where('id', $id)->update(array('state' => -1));
           return response()->json([
             'response' => true
           ]);
           break;
-
         case 'discard':
           $orders->where('id', $id)->update(array('state' => 0));
           return response()->json([
             'response' => true
           ]);
           break;
-
         case 'delete':
           $orders->where('id', $id)->delete();
           return response()->json([
             'response' => true
           ]);
           break;
-
         default:
           return response()->json([
             'response' => false,
@@ -135,7 +132,6 @@ class AdminApi extends Controller
                 'message' => 'Не удалось подключиться к боту'
               ]);
             }
-
           } elseif ($r['value'] == 'disable') {
             DB::table('notifications')
               ->where('id', 1)
@@ -150,7 +146,7 @@ class AdminApi extends Controller
           }
           break;
         case 'email':
-          echo 'email';
+          // todo
           break;
         default:
           return response()->json([
@@ -165,7 +161,6 @@ class AdminApi extends Controller
   {
     $analytics_main = $request->input('analytics_main');
     $analytics_success = $request->input('analytics_success');
-
     try {
       $analytics = Analytics::find(1);
       $analytics->main_analytics = $analytics_main;
@@ -180,10 +175,9 @@ class AdminApi extends Controller
         'message' => 'Произошла внутреняя ошибка'
       ]);
     }
-
   }
 
-  public function telegramBotCheckConnection($token)
+  private function telegramBotCheckConnection($token)
   {
     $telegram = new TelegramAPI($token);
     try {
@@ -196,5 +190,45 @@ class AdminApi extends Controller
     }
   }
 
+  public function displayAdminImage()
+  {
+    $defaultImage = 'dashboard/img/admin.png';
+    $user = User::find(1);
+    if (!$user->image) {
+      return response()->file(public_path($defaultImage), ['Content-Type' => 'image/png']);
+    } else {
+      if (Storage::disk('local')->exists('public/images/' . $user->image)) {
+        return response()->file(storage_path('app/public/images/' . $user->image), ['Content-Type' => 'image/png']);
+      } else {
+        return response()->file(public_path($defaultImage), ['Content-Type' => 'image/png']);
+      }
+    }
+  }
 
+  public function uploadAdminImage(Request $request)
+  {
+    $files = $request->all();
+    $rules = ['image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'];
+    $validator = Validator::make($files, $rules);
+    $errors = $validator->errors()->messages();
+
+    if (!$errors) {
+      $imageName = Str::random(32) . '.' . $request->file('image')->extension();
+      $request->file('image')->move(storage_path('app/public/images'), $imageName);
+
+      $user = User::find(1);
+      $user->image = $imageName;
+      $user->save();
+
+      return response()->json([
+        'response' => true,
+        'url' => url('/') . Storage::url('app/public/images/' . $imageName)
+      ]);
+    } else {
+      return response()->json([
+        'response' => false,
+        'message' => 'Ошибка при загрузке файла'
+      ]);
+    }
+  }
 }

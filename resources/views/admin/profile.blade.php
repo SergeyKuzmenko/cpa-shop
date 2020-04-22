@@ -30,7 +30,8 @@
 
               <form method="post" id="uploadImage" enctype="multipart/form-data">
                 <label for="upload">
-                  <img class="profile-user-img img-fluid img-circle" src="{{ route('admin.profile.image') }}"
+                  <img class="profile-user-img admin-image img-fluid img-circle"
+                       src="{{ route('admin.profile.image') }}"
                        alt="{{$name}}" title="Выбрать фото" for="upload">
                   <input type="file" id="upload" style="display:none">
                 </label>
@@ -78,7 +79,9 @@
               </div>
               <div class="form-group row">
                 <div class="offset-sm-2 col-sm-10">
-                  <button class="btn btn-success float-right save-other-submit" onclick="saveOther();return false;">Сохранить</button>
+                  <button class="btn btn-success float-right save-other-submit" onclick="saveOther();return false;">
+                    Сохранить
+                  </button>
                 </div>
               </div>
             </form>
@@ -102,13 +105,13 @@
       }
     });
 
-    $("input:file").change(function (){
+    $("input:file").change(function () {
       var formData = new FormData();
       var file = $('#upload')[0].files[0];
       formData.append("image", file);
 
       $.ajax({
-        type:'POST',
+        type: 'POST',
         headers: {
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         },
@@ -117,11 +120,47 @@
         cache: false,
         contentType: false,
         processData: false,
-        success:function(r){
-          //
+        beforeSend: function () {
+          Swal.fire({
+            position: "center",
+            icon: "info",
+            title: "Загрузка...",
+            showConfirmButton: false
+          });
         },
-        error: function(r){
-          //
+        success: function (r) {
+          if (r.response) {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Фото изменено",
+              showConfirmButton: false,
+              timer: 3000
+            });
+            $("img.admin-image").each(function () {
+              let base_url = $(this).attr('src').split('?i=')[0];
+              let address = base_url + '?i=' + Math.random();
+              $(this).attr("src", address);
+            });
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              title: "Ошибка",
+              text: r.message,
+              showConfirmButton: false,
+              timer: 3000
+            });
+          }
+        },
+        error: function (r) {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Произошла внутренняя ошибка",
+            showConfirmButton: false,
+            timer: 3000
+          });
         }
       });
     });
@@ -197,7 +236,7 @@
               timer: 3000
             });
             $(".save-other-submit").removeAttr("disabled");
-            if(r.reload){
+            if (r.reload) {
               location.reload();
             }
           } else {

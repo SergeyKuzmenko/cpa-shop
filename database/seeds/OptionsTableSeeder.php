@@ -21,7 +21,7 @@ class OptionsTableSeeder extends Seeder
         'main_new_price' => 45,
         'main_og_locale' => 'ru',
         'main_og_type' => 'website',
-        'main_og_title' => 'main_og_url',
+        'main_og_title' => 'main_og_title',
         'main_og_description' => 'main_og_description',
         'main_og_url' => 'main_og_url',
         'main_og_image' => 'url/to/img',

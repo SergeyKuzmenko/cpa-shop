@@ -33,13 +33,13 @@
     <ul class="navbar-nav ml-auto">
       <li class="nav-item dropdown user-menu">
         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <img src="{{ route('admin.profile.image') }}" class="user-image img-circle elevation-2"
+          <img src="{{ route('admin.profile.image') }}" class="user-image admin-image img-circle elevation-2"
                alt="Admin Image">
           <span class="d-none d-md-inline">Администратор</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <li class="user-header bg-primary">
-            <img src="{{ route('admin.profile.image') }}" class="img-circle elevation-2" alt="Admin">
+            <img src="{{ route('admin.profile.image') }}" class="img-circle admin-image elevation-2" alt="Admin">
 
             <p>
               Администратор сайта
@@ -70,7 +70,7 @@
           <a href="{{ url('/admin/profile') }}">
             <img
                 src="{{ route('admin.profile.image') }}"
-                class="img-circle elevation-2"
+                class="img-circle elevation-2 admin-image"
                 alt="Admin Image"
             />
           </a>

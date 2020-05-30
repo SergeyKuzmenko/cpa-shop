@@ -42,7 +42,7 @@
 
                 <div class="tab-pane active show" id="custom-tabs-three-telegram" role="tabpanel"
                      aria-labelledby="custom-tabs-three-main-tab">
-                  @if (!$telegram_notification_status)
+                  @if (!$params['telegram_notification_status'])
                     <div class="input-group input-group">
                       <div class="input-group-prepend">
                         <span class="input-group-text">TELEGRAM_BOT_TOKEN</span>
@@ -57,10 +57,10 @@
                   @else
                     <div class="input-group input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text">TestCpaShopBot</span>
+                        <span class="input-group-text">{{ $params['telegram_bot_username'] }}</span>
                       </div>
                       <input type="text" name="telegram_bot_token" class="form-control" id="telegram_bot_token"
-                             value="{{$telegram_bot_token}}" disabled>
+                             value="{{ $params['telegram_bot_token'] }}" disabled>
                       <span class="input-group-append">
                       <button type="button"
                               class="btn btn-danger btn-flat telegram_notification_disable">Отключить</button>
@@ -69,10 +69,9 @@
                   @endif
                 </div>
 
-
                 <div class="tab-pane fade" id="custom-tabs-three-email" role="tabpanel"
                      aria-labelledby="custom-tabs-three-profile-tab">
-                  @if (!$email_notification_status)
+                  @if (!$params['telegram_bot_token'])
                     <div class="input-group input-group">
                       <div class="input-group-prepend">
                         <span class="input-group-text">E-mail</span>
@@ -89,7 +88,7 @@
                         <span class="input-group-text">E-mail</span>
                       </div>
                       <input type="text" name="email_notification" class="form-control" id="email_notification"
-                             value="{{$email_email}}" disabled>
+                             value="{{ $params['email_email'] }}" disabled>
                       <span class="input-group-append">
                         <button type="button" class="btn btn-danger btn-flat">Отключить</button>
                       </span>
@@ -102,58 +101,44 @@
           </div>
         </div>
       </div>
-      @if ($telegram_notification_status)
+      @if ($params['telegram_notification_status'])
         <div class="container-fluid">
           <div class="row">
             <div class="col-md-6">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">Подключеные профили</h3>
+                  <h3 class="card-title">Подключеные аккаунты</h3>
                 </div>
-                <div class="card-body">
+                @if ($telegram_connected_users)
+                  <div class="card-body">
                   <table class="table table-bordered">
                     <thead>
                     <tr>
-                      <th style="width: 10px">#</th>
                       <th>Имя</th>
                       <th>chat_id</th>
                       <th style="width: 40px">Действие</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td><a href="https://t.me/sergey__kuzmenko" target="_blank">sergey__kuzmenko</a></td>
-                      <td>
-                        <a href="#134791860">134791860</a>
-                      </td>
-                      <td>
-                        <button type="button" class="btn btn-block btn-danger">Отключить</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td><a href="https://t.me/test_profile" target="_blank">test_profile</a></td>
-                      <td>
-                        <a href="#134791860">7452347834</a>
-                      </td>
-                      <td>
-                        <button type="button" class="btn btn-block btn-danger">Отключить</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td><a href="https://t.me/eldak_shop" target="_blank">eldak_shop</a></td>
-                      <td>
-                        <a href="#134791860">2342343423</a>
-                      </td>
-                      <td>
-                        <button type="button" class="btn btn-block btn-danger">Отключить</button>
-                      </td>
-                    </tr>
+                    @foreach ($telegram_connected_users as $user)
+                      <tr>
+                        <td><a href="https://t.me/{{ $user->username }}" target="_blank">{{ $user->first_name }} ({{ $user->username }})</a></td>
+                        <td>
+                          <a href="#{{ $user->chat_id }}">{{ $user->chat_id }}</a>
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-block btn-danger" data-disable-account="{{ $user->chat_id }}">Отключить</button>
+                        </td>
+                      </tr>
+                    @endforeach
                     </tbody>
                   </table>
                 </div>
+                @else
+                  <div class="card-body">
+                    <p class="lead">Нет подключенных аккаунтов</p>
+                  </div>
+                @endif
               </div>
             </div>
             <div class="col-md-6">

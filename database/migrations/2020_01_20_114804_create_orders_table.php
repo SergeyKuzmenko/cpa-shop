@@ -21,7 +21,7 @@ class CreateOrdersTable extends Migration
       $table->string('ip');
       $table->string('user_agent')->nullable();
       $table->string('location')->nullable();
-      $table->string('state');
+      $table->integer('state');
       $table->timestamps();
     });
   }

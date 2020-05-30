@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Telegram\Bot\Api as TelegramAPI;
+use Telegram\Bot\Exceptions\TelegramResponseException;
+use App\Http\Controllers\TelegramNotification;
 
 use App\Models\Orders;
 use App\Models\Analytics;
+use App\Models\Notifications;
 use App\User;
 
 class AdminApi extends Controller
@@ -74,19 +77,19 @@ class AdminApi extends Controller
     if ($id !== null && $action !== null) {
       switch ($action) {
         case 'successed':
-          $orders->where('id', $id)->update(array('state' => 1));
+          $orders->where('id', $id)->update(['state' => 1]);
           return response()->json([
             'response' => true
           ]);
           break;
         case 'canceled':
-          $orders->where('id', $id)->update(array('state' => -1));
+          $orders->where('id', $id)->update(['state' => -1]);
           return response()->json([
             'response' => true
           ]);
           break;
         case 'discard':
-          $orders->where('id', $id)->update(array('state' => 0));
+          $orders->where('id', $id)->update(['state' => 0]);
           return response()->json([
             'response' => true
           ]);
@@ -111,20 +114,29 @@ class AdminApi extends Controller
     }
   }
 
-  public function notifications(Request $request)
+  public function notifications(Request $request, Notifications $notification)
   {
     $r = $request->all();
     if ($r) {
       switch ($r['action']) {
         case 'telegram':
           if ($r['value'] == 'enable') {
-            if ($this->telegramBotCheckConnection($r['key'])['status']) {
-              DB::table('notifications')
-                ->where('id', 1)
-                ->update(['telegram_notification_status' => 1, 'telegram_bot_token' => $r['key']]);
+            $telegram = $this->telegramBotCheckConnection($r['key']);
+            if ($telegram['status']) {
+              $notification->where('id', 1)->update([
+                'telegram_notification_status' => 1,
+                'telegram_bot_token' => $r['key'],
+                'telegram_bot_id'=> $telegram['payload']['id'],
+                'telegram_bot_first_name'=> $telegram['payload']['first_name'],
+                'telegram_bot_username'=> $telegram['payload']['username']
+              ]);
+
+              $telegramNotification = new TelegramNotification();
+              $telegramNotification->setWebhook();
+
               return response()->json([
                 'response' => true,
-                'telegram_response' => $this->telegramBotCheckConnection($r['key'])['data']
+                'telegram_response' => $telegram['payload']
               ]);
             } else {
               return response()->json([
@@ -133,9 +145,16 @@ class AdminApi extends Controller
               ]);
             }
           } elseif ($r['value'] == 'disable') {
-            DB::table('notifications')
-              ->where('id', 1)
-              ->update(['telegram_notification_status' => 0, 'telegram_bot_token' => 0]);
+            $notification->where('id', 1)->update([
+              'telegram_notification_status' => 0,
+              'telegram_bot_token' => null,
+              'telegram_bot_id'=> null,
+              'telegram_bot_first_name'=> null,
+              'telegram_bot_username'=> null
+            ]);
+            $telegramNotification = new TelegramNotification();
+            $telegramNotification->removeWebhook();
+            DB::table('telegram_connected_users')->truncate();
             return response()->json([
               'response' => true
             ]);
@@ -146,7 +165,7 @@ class AdminApi extends Controller
           }
           break;
         case 'email':
-          // todo
+          //todo
           break;
         default:
           return response()->json([
@@ -162,7 +181,7 @@ class AdminApi extends Controller
     $analytics_main = $request->input('analytics_main');
     $analytics_success = $request->input('analytics_success');
     try {
-      $analytics = Analytics::find(1);
+      $analytics = Analytics::first();
       $analytics->main_analytics = $analytics_main;
       $analytics->success_analytics = $analytics_success;
       $analytics->save();
@@ -183,10 +202,13 @@ class AdminApi extends Controller
     try {
       $response = $telegram->getMe();
       if ($response) {
-        return ['status' => true, 'data' => $response];
+        return ['status' => true, 'payload' => $response];
       }
-    } catch (\Exception $exception) {
-      return ['status' => false, 'data' => false];
+    } catch (TelegramResponseException $e) {
+      return [
+        'status' => false,
+        'http_error_code' => $e->getHttpStatusCode(),
+        'payload' => false];
     }
   }
 

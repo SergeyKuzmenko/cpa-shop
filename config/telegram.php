@@ -11,7 +11,7 @@ return [
     | bots at once using the manager class.
     |
     */
-    'default' => 'KulonShopBot',
+    'default' => 'TestCpaShopBot',
 
     /*
     |--------------------------------------------------------------------------
@@ -39,11 +39,13 @@ return [
     |             ]
     */
     'bots' => [
-        'KulonShopBot' => [
-            'username'  => 'KulonShopBot',
+        'TestCpaShopBot' => [
+            'username'  => 'TestCpaShop',
             'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR-BOT-TOKEN'),
             'commands' => [
-//                Acme\Project\Commands\MyTelegramBot\BotCommand::class
+              App\Services\Telegram\Commands\StartCommand::class,
+              App\Services\Telegram\Commands\ListCommand::class,
+              App\Services\Telegram\Commands\UnsubscribeCommand::class
             ],
         ],
 
@@ -110,7 +112,7 @@ return [
     |
     */
     'commands' => [
-        Telegram\Bot\Commands\HelpCommand::class,
+        //Telegram\Bot\Commands\HelpCommand::class,
     ],
 
     /*

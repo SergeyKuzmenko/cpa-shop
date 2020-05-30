@@ -14,12 +14,14 @@ class NotificationsTableSeeder extends Seeder
     {
       DB::table('notifications')->insert([
         'telegram_notification_status' => 0,
-        'telegram_bot_token' => '',
-        'telegram_bot_name' => '',
-        'telegram_connected_users' => '[]',
+        'telegram_bot_token' => null,
+        'telegram_bot_id' => null,
+        'telegram_bot_first_name' => null,
+        'telegram_bot_username' => null,
+
         'email_notification_status' => 0,
-        'email_email' => '',
-        'email_connected_users' => '[]'
+        'email_email' => null,
+        'email_connected_emails' => null
       ]);
     }
 }

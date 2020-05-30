@@ -17,11 +17,13 @@ class CreateNotificationsTable extends Migration
       $table->increments('id');
       $table->integer('telegram_notification_status')->default(0);
       $table->string('telegram_bot_token')->nullable();
-      $table->string('telegram_bot_name')->nullable();
-      $table->string('telegram_connected_users')->nullable();
+      $table->string('telegram_bot_id')->nullable();
+      $table->string('telegram_bot_first_name')->nullable();
+      $table->string('telegram_bot_username')->nullable();
+
       $table->integer('email_notification_status')->default(0);
       $table->string('email_email')->nullable();
-      $table->string('email_connected_users')->nullable();
+      $table->string('email_connected_emails')->nullable();
     });
   }
 

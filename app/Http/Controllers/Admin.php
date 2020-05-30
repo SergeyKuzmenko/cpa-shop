@@ -7,6 +7,8 @@ use App\Models\Notifications;
 use App\Models\Analytics;
 use App\User;
 
+use Illuminate\Support\Facades\DB;
+
 class Admin extends Controller
 {
   public function profile(User $u)
@@ -21,7 +23,8 @@ class Admin extends Controller
 
   public function notifications(Notifications $n)
   {
-    return view('admin.notifications', $n->get()->first()->toArray());
+    $telegram_connected_users = DB::table('telegram_connected_users')->get()->toArray();
+    return view('admin.notifications', ['telegram_connected_users' => $telegram_connected_users, 'params' => $n->get()->first()->toArray()]);
   }
 
   public function analytics(Analytics $a)

@@ -21,6 +21,7 @@ class ShopApi extends Controller
       'phone' => $request->input('phone'),
       'timestamp' => $carbon->now()->format('d.m.Y') . ' ' . $carbon->now()->format('H:i:s'),
       'ip' => $request->ip(),
+      'user_agent' => $request->header('User-Agent'),
       'location' => $this->getLocation($request->ip()),
       'state' => 0,
     ];
@@ -31,6 +32,7 @@ class ShopApi extends Controller
       $newOrder->name = $data['name'];
       $newOrder->phone = $data['phone'];
       $newOrder->ip = $data['ip'];
+      $newOrder->user_agent = $data['user_agent'];
       $newOrder->location = $data['location'];
       $newOrder->state = $data['state'];
       $newOrder->save();

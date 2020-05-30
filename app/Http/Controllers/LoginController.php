@@ -10,6 +10,11 @@ class LoginController extends Controller
 {
   protected $redirectTo = 'admin';
 
+  public function login()
+  {
+    return view('login');
+  }
+
   public function authenticate(Request $request)
   {
     $credentials = $request->only('login', 'password');
